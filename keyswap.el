@@ -175,28 +175,28 @@ Neither KEY nor COMMAND may be `nil'. "
   ;; While in later versions of emacs the `eval' function can take a lexical
   ;; environment, I know that this can't be done on at least emacs 24.3.1, and
   ;; so am using the more compatible call method.
-  (eval
-   `(let ((key key) (old-binding command)
-          (current-key (aref key (- (length key) 1))))
-      (lambda (&optional arg return-command)
-        ,(concat keyswap-command-docstring "\""
-                 (keyswap--print-key-vector key)
-                 "\""
-                 "\n\nWrapping the command\n\n"
-                 (format "%S" command)
-                 "\n\nWith the key vector\n\n"
-                 (format "%S" key))
-        (interactive "p")
-        (if return-command
-            old-binding
-          ;; Set `last-command-event' so that `self-insert-char' behaves as
-          ;; expected.
-          ;; Attempt to use `call-interactively' to set the values that
-          ;; `this-command-keys-vector' will find, but it doesn't seem to be
-          ;; working at the moment, and I can't figure out why.
-          (let ((last-command-event current-key))
-            (call-interactively old-binding nil key)))))
-   t))
+  (let ((form
+         `(let ((key key) (old-binding command)
+                (current-key (aref key (- (length key) 1))))
+            (lambda (&optional arg return-command)
+              ,(concat keyswap-command-docstring "\""
+                       (keyswap--print-key-vector key)
+                       "\""
+                       "\n\nWrapping the command\n\n"
+                       (format "%S" command)
+                       "\n\nWith the key vector\n\n"
+                       (format "%S" key))
+              (interactive "p")
+              (if return-command
+                  old-binding
+                ;; Set `last-command-event' so that `self-insert-char' behaves as
+                ;; expected.
+                ;; Attempt to use `call-interactively' to set the values that
+                ;; `this-command-keys-vector' will find, but it doesn't seem to be
+                ;; working at the moment, and I can't figure out why.
+                (let ((last-command-event current-key))
+                  (call-interactively old-binding nil key)))))))
+    (eval form `((key . ,key) (command . ,command)))))
 
 (defun keyswap--unbound-key-mock ()
   "Mock function to pretend that this key is undefined.
