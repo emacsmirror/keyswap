@@ -29,7 +29,7 @@
 ;; Version: 0.1.1
 ;; Package-Version: 20160730.1620
 ;; URL: http://github.com/hardenedapple/keyswap.el
-;; Package-Requires: ((emacs "24.3"))
+;; Package-Requires: ((emacs "25.1"))
 
 ;; This file is NOT part of GNU Emacs.
 
@@ -174,7 +174,12 @@ Neither KEY nor COMMAND may be `nil'. "
   ;;
   ;; While in later versions of emacs the `eval' function can take a lexical
   ;; environment, I know that this can't be done on at least emacs 24.3.1, and
-  ;; so am using the more compatible call method.
+  ;; so originally used the more compatible call method.
+  ;;
+  ;; On a (much) later date -- about 8 years after -- it seemed like the older
+  ;; form was no longer doing what I expected it to do.  I honestly don't fully
+  ;; understand what was going on, but don't have the time and the neater
+  ;; version works.  Hence went with an explicit `eval' lexical environment.
   (let ((form
          `(let ((key key) (old-binding command)
                 (current-key (aref key (- (length key) 1))))
