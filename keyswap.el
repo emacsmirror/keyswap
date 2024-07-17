@@ -249,7 +249,14 @@ unavailable.
          (current-docstring (documentation current-binding)))
     (if (eq current-binding 'keyswap--unbound-key-mock)
         'keyswap--unbound-key-mock
-        (if (and (listp current-binding)
+        (if (and (or (and (version< emacs-version "30.0")
+                          (listp current-binding))
+                     (and (version< "30.0" emacs-version)
+                          ;; N.b. this gives a warning on older versions of
+                          ;; emacs because `interpreted-function-p' is not known
+                          ;; to be defined (it's not defined until emacs 30,
+                          ;; which is why I have the condition above).
+                          (interpreted-function-p current-binding)))
                  current-docstring
                  (string-prefix-p keyswap-command-docstring current-docstring))
             (funcall current-binding nil t)
