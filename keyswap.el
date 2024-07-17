@@ -333,9 +333,7 @@ bindings of those other minor modes.  In this case
 `keyswap-update-keys' should be called to update the bindings on
 the current set of `keyswap-pairs'.
 "
-  nil
-  " keyswap"
-  nil
+  :lighter " keyswap"
   ;; Body is executed every time the mode is toggled
   ;; If keyswap-mode is not in the `minor-mode-overriding-map-alist' variable,
   ;; then create a new map with `keyswap-swapped-keymap', and add that to the list of
@@ -530,6 +528,7 @@ current buffer when searching with `isearch-mode'."
 ;; avy.el, I only want to define these functions when I know that `avy' is
 ;; defined.  Should be able to avoid byte-compilation errors with that.
 (with-eval-after-load 'avy
+  (defvar avy-translate-char-function)
   (defun keyswap-avy-integrate ()
     "Set it up so that keys are swapped when searching for a char and when
   selecting an option in `avy'."
