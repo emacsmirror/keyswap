@@ -1,4 +1,4 @@
-;;; keyswap.el --- swap bindings between key pairs
+;;; keyswap.el --- swap bindings between key pairs -*- lexical-binding: t -*-
 
 ;; Copyright (C) 2016 Matthew Malcomson
 
