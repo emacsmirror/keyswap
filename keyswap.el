@@ -525,27 +525,32 @@ current buffer when searching with `isearch-mode'."
         (if key-pair (aref (cdr key-pair) 0) original-key))
     original-key))
 
-(defun keyswap-avy-integrate ()
-  "Set it up so that keys are swapped when searching for a char and when
+;; TODO Would like to avoid byte-compilation warnings from using
+;; `avy-translate-char-function'.  This is a dynamic variable declared in
+;; avy.el, I only want to define these functions when I know that `avy' is
+;; defined.  Should be able to avoid byte-compilation errors with that.
+(with-eval-after-load 'avy
+  (defun keyswap-avy-integrate ()
+    "Set it up so that keys are swapped when searching for a char and when
   selecting an option in `avy'."
-  ;; This is a little dangerous -- I put an advice around `read-char', in order
-  ;; to swap the characters that are read as arguments in many `avy' functions.
-  ;;
-  ;; I don't know whether this will create any adverse affects because I don't
-  ;; know where else this function is used.
-  ;;
-  ;; On the other hand, if the goal is integration, then this function will only
-  ;; help with that, so it may be a good thing.
-  (advice-add 'read-char :filter-return 'keyswap--avy-char-translate
-              '((name . keyswap-read-char-transform)))
-  ;; Make it so that letters to jump to are also swapped according to
-  ;; `keyswap-pairs'
-  (setq avy-translate-char-function #'keyswap--avy-char-translate))
+    ;; This is a little dangerous -- I put an advice around `read-char', in order
+    ;; to swap the characters that are read as arguments in many `avy' functions.
+    ;;
+    ;; I don't know whether this will create any adverse affects because I don't
+    ;; know where else this function is used.
+    ;;
+    ;; On the other hand, if the goal is integration, then this function will only
+    ;; help with that, so it may be a good thing.
+    (advice-add 'read-char :filter-return 'keyswap--avy-char-translate
+                '((name . keyswap-read-char-transform)))
+    ;; Make it so that letters to jump to are also swapped according to
+    ;; `keyswap-pairs'
+    (setq avy-translate-char-function #'keyswap--avy-char-translate))
 
-(defun keyswap-avy-remove-integration ()
-  "Remove the settings such that `keyswap-mode' affects `avy'."
-  (advice-remove 'read-char 'keyswap-read-char-transform)
-  (setq avy-translate-char-function #'identity))
+  (defun keyswap-avy-remove-integration ()
+    "Remove the settings such that `keyswap-mode' affects `avy'."
+    (advice-remove 'read-char 'keyswap-read-char-transform)
+    (setq avy-translate-char-function #'identity)))
 
 (provide 'keyswap)
 
